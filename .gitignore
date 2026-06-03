@@ -1,0 +1,17 @@
+# Node
+node_modules
+dist
+
+# Go
+bin
+coverage.out
+
+# Env
+.env
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
