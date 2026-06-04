@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS payment_events;
+
+DROP TABLE IF EXISTS orders;
+
+DROP TABLE IF EXISTS invoice_items;
+
+DROP TABLE IF EXISTS invoices;
+
+DROP TABLE IF EXISTS customers;
+
+DROP TABLE IF EXISTS settings;
+
+DROP TABLE IF EXISTS business_profile;
+
+DROP TABLE IF EXISTS business;
+
+DROP EXTENSION IF EXISTS pgcrypto;
