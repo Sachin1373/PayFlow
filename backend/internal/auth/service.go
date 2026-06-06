@@ -1,29 +1,26 @@
-package service
+package auth
 
 import (
 	"context"
 	"errors"
 
-	"github.com/Sachin1373/payflow/backend/internal/db/repository"
-	"github.com/Sachin1373/payflow/backend/internal/models"
+	"github.com/Sachin1373/payflow/backend/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type JWT struct {
-}
-
 type AuthService struct {
-	repo      *repository.BusinessRepository
+	repo      *BusinessRepository
 	jwtSecret string
 }
 
-func NewAuthService(repo *repository.BusinessRepository) *AuthService {
+func NewAuthService(repo *BusinessRepository, jwtSecret string) *AuthService {
 	return &AuthService{
-		repo: repo,
+		repo:      repo,
+		jwtSecret: jwtSecret,
 	}
 }
 
-func (s *AuthService) Register(ctx context.Context, req *models.RegisterRequest) error {
+func (s *AuthService) Register(ctx context.Context, req *RegisterRequest) error {
 	exists, err := s.repo.FindBusinessByEmail(ctx, req.Email)
 
 	if err != nil {
@@ -50,7 +47,7 @@ func (s *AuthService) Register(ctx context.Context, req *models.RegisterRequest)
 	)
 }
 
-func (s *AuthService) Login(ctx context.Context, req *models.Login) (string, error) {
+func (s *AuthService) Login(ctx context.Context, req *Login) (string, error) {
 	business, err := s.repo.FindUserByEmail(ctx, req.Email)
 
 	if err != nil {
@@ -61,7 +58,7 @@ func (s *AuthService) Login(ctx context.Context, req *models.Login) (string, err
 		return "", errors.New("invalid credentials")
 	}
 
-	token, err := GenerateToken(business.Uuid, s.jwtSecret)
+	token, err := utils.GenerateToken(business.Uuid, s.jwtSecret)
 
 	if err != nil {
 		return "", err

@@ -1,19 +1,17 @@
-package handlers
+package auth
 
 import (
 	"net/http"
 
-	"github.com/Sachin1373/payflow/backend/internal/models"
-	"github.com/Sachin1373/payflow/backend/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
-	service *service.AuthService
+	service *AuthService
 }
 
 func NewAuthHandler(
-	service *service.AuthService,
+	service *AuthService,
 ) *AuthHandler {
 	return &AuthHandler{
 		service: service,
@@ -21,7 +19,7 @@ func NewAuthHandler(
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
-	var req models.RegisterRequest
+	var req RegisterRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(
@@ -57,7 +55,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
-	var req models.Login
+	var req Login
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(

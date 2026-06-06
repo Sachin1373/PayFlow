@@ -1,9 +1,8 @@
-package repository
+package auth
 
 import (
 	"context"
 
-	"github.com/Sachin1373/payflow/backend/internal/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -34,7 +33,7 @@ func (r *BusinessRepository) FindBusinessByEmail(ctx context.Context, email stri
 	return exists, err
 }
 
-func (r *BusinessRepository) CreateBusiness(ctx context.Context, req *models.RegisterRequest, hashedPassword string) error {
+func (r *BusinessRepository) CreateBusiness(ctx context.Context, req *RegisterRequest, hashedPassword string) error {
 	_, err := r.db.Exec(
 		ctx,
 		`
@@ -57,8 +56,8 @@ func (r *BusinessRepository) CreateBusiness(ctx context.Context, req *models.Reg
 
 }
 
-func (r *BusinessRepository) FindUserByEmail(ctx context.Context, email string) (*models.Business, error) {
-	var business models.Business
+func (r *BusinessRepository) FindUserByEmail(ctx context.Context, email string) (*Business, error) {
+	var business Business
 
 	err := r.db.QueryRow(ctx,
 		`
