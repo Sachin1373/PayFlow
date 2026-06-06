@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"time"
+
+	"github.com/gin-contrib/cors"
 
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/config"
@@ -33,6 +36,26 @@ func main() {
 	}
 
 	router := routes.NewRouter()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:5173",
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+			"OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Authorization",
+		},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	routes.RegisterRoutes(router, app)
 
