@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/Sachin1373/payflow/backend/internal/api/routes"
+	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/config"
 	"github.com/Sachin1373/payflow/backend/internal/db"
 )
@@ -26,9 +27,14 @@ func main() {
 
 	defer pool.Close()
 
+	app := &app.App{
+		DB:     pool,
+		Config: cfg,
+	}
+
 	router := routes.NewRouter()
 
-	routes.RegisterRoutes(router)
+	routes.RegisterRoutes(router, app)
 
 	log.Printf("Server running on :%s", cfg.AppPort)
 

@@ -1,7 +1,12 @@
 package routes
 
 import (
+	"fmt"
+
 	"github.com/Sachin1373/payflow/backend/internal/api/handlers"
+	"github.com/Sachin1373/payflow/backend/internal/app"
+	"github.com/Sachin1373/payflow/backend/internal/db/repository"
+	"github.com/Sachin1373/payflow/backend/internal/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,11 +16,36 @@ func NewRouter() *gin.Engine {
 	return router
 }
 
-func RegisterRoutes(router *gin.Engine) {
+func RegisterRoutes(router *gin.Engine, app *app.App) {
+
+	repo := repository.NewBusinessRepository(
+		app.DB,
+	)
+
+	fmt.Println("repo :", repo)
+
+	authService := service.NewAuthService(
+		repo,
+	)
+
+	fmt.Println("authService :", authService)
+
+	authHandler := handlers.NewAuthHandler(
+		authService,
+	)
+
+	fmt.Println("authHandler :", authHandler)
 
 	v1 := router.Group("/api/v1")
 
 	{
 		v1.GET("/ping", handlers.PingHandler)
+	}
+
+	auth := v1.Group("auth")
+
+	{
+		auth.POST("/register", authHandler.Register)
+		auth.POST("/login", authHandler.Login)
 	}
 }
