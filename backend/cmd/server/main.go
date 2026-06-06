@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/Sachin1373/payflow/backend/internal/api/routes"
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/config"
 	"github.com/Sachin1373/payflow/backend/internal/db"
+	"github.com/Sachin1373/payflow/backend/internal/routes"
 )
 
 // work of main

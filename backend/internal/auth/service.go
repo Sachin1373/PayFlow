@@ -47,7 +47,7 @@ func (s *AuthService) Register(ctx context.Context, req *RegisterRequest) error 
 	)
 }
 
-func (s *AuthService) Login(ctx context.Context, req *Login) (string, error) {
+func (s *AuthService) Login(ctx context.Context, req *LoginRequest) (string, error) {
 	business, err := s.repo.FindUserByEmail(ctx, req.Email)
 
 	if err != nil {
