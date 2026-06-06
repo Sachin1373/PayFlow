@@ -1,23 +1,36 @@
 package main
 
 import (
+	"log"
+
+	"github.com/Sachin1373/payflow/backend/internal/api/routes"
 	"github.com/Sachin1373/payflow/backend/internal/config"
 	"github.com/Sachin1373/payflow/backend/internal/db"
-	"github.com/gin-gonic/gin"
 )
+
+// work of main
+// 1. load config
+// 2. connect db
+// 3. create router
+// 4. register routes
+// 5. start server
 
 func main() {
 	cfg := config.Load()
 
-	db.DBConn(cfg)
+	pool, err := db.DBConn(cfg)
 
-	router := gin.Default()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "ping",
-		})
-	})
+	defer pool.Close()
+
+	router := routes.NewRouter()
+
+	routes.RegisterRoutes(router)
+
+	log.Printf("Server running on :%s", cfg.AppPort)
 
 	router.Run(":" + cfg.AppPort)
 
