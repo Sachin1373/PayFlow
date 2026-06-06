@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"fmt"
-
 	"github.com/Sachin1373/payflow/backend/internal/api/handlers"
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/db/repository"
@@ -22,19 +20,13 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 		app.DB,
 	)
 
-	fmt.Println("repo :", repo)
-
 	authService := service.NewAuthService(
 		repo,
 	)
 
-	fmt.Println("authService :", authService)
-
 	authHandler := handlers.NewAuthHandler(
 		authService,
 	)
-
-	fmt.Println("authHandler :", authHandler)
 
 	v1 := router.Group("/api/v1")
 
