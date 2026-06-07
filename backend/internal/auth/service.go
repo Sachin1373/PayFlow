@@ -58,7 +58,7 @@ func (s *AuthService) Login(ctx context.Context, req *LoginRequest) (string, err
 		return "", errors.New("invalid credentials")
 	}
 
-	token, err := utils.GenerateToken(business.Uuid, s.jwtSecret)
+	token, err := utils.GenerateToken(business.Uuid, business.Email, business.FirstName, business.LastName, s.jwtSecret)
 
 	if err != nil {
 		return "", err

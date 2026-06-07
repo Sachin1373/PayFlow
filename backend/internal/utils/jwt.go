@@ -8,11 +8,17 @@ import (
 
 func GenerateToken(
 	businessID string,
+	email string,
+	firstName string,
+	lastName string,
 	secret string,
 ) (string, error) {
 
 	claims := jwt.MapClaims{
 		"business_id": businessID,
+		"email":       email,
+		"first_name":  firstName,
+		"last_name":   lastName,
 		"exp": time.Now().
 			Add(24 * time.Hour).
 			Unix(),

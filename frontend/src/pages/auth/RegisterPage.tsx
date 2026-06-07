@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { registerUser } from "@/services/auth.service";
 
 type RegisterFormData = {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
-  mobile: string;
+  mobile_no: string;
   password: string;
 };
 
@@ -97,14 +97,14 @@ export default function RegisterPage() {
                 <Input
                   placeholder="First Name"
                   className="h-11 bg-[#102852] border-white/10 text-white"
-                  {...register("firstName", {
+                  {...register("first_name", {
                     required: "First name is required",
                   })}
                 />
 
-                {errors.firstName && (
+                {errors.first_name && (
                   <p className="mt-1 text-sm text-red-400">
-                    {errors.firstName.message}
+                    {errors.first_name.message}
                   </p>
                 )}
               </div>
@@ -113,14 +113,14 @@ export default function RegisterPage() {
                 <Input
                   placeholder="Last Name"
                   className="h-11 bg-[#102852] border-white/10 text-white"
-                  {...register("lastName", {
+                  {...register("last_name", {
                     required: "Last name is required",
                   })}
                 />
 
-                {errors.lastName && (
+                {errors.last_name && (
                   <p className="mt-1 text-sm text-red-400">
-                    {errors.lastName.message}
+                    {errors.last_name.message}
                   </p>
                 )}
               </div>
@@ -148,14 +148,14 @@ export default function RegisterPage() {
               <Input
                 placeholder="Mobile Number"
                 className="h-11 bg-[#102852] border-white/10 text-white"
-                {...register("mobile", {
+                {...register("mobile_no", {
                   required: "Mobile number is required",
                 })}
               />
 
-              {errors.mobile && (
+              {errors.mobile_no && (
                 <p className="mt-1 text-sm text-red-400">
-                  {errors.mobile.message}
+                  {errors.mobile_no.message}
                 </p>
               )}
             </div>
