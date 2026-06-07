@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getProfile, updateProfile } from "../../services/profile.service";
+import { getProfile, registerProfile } from "../../services/profile.service";
 
 type NotificationsState = {
   payment_received: boolean;
@@ -42,8 +42,7 @@ const Notifications: React.FC = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      await updateProfile({
-        section: "notifications",
+      await registerProfile({
         payload: notif,
       });
     } catch (err) {

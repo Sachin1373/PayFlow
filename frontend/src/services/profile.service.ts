@@ -5,10 +5,10 @@ export const getProfile = async () => {
   return res.data;
 };
 
-export const updateProfile = async ({ section, payload }: { section: string; payload: any }) => {
+export const registerProfile = async ({ payload }: { payload: any }) => {
   // For now backend expects same endpoint; section passed in body so backend can route
-  const res = await api.post(`/profile`, { section, ...payload });
+  const res = await api.post(`/profile/register`, { ...payload });
   return res.data;
 };
 
-export default { getProfile, updateProfile };
+export default { getProfile, registerProfile };

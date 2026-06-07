@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getProfile, updateProfile } from "../../services/profile.service";
+import { getProfile, registerProfile } from "../../services/profile.service";
 import { Eye, EyeOff } from "lucide-react";
 
 const ApiConfiguration: React.FC = () => {
@@ -30,8 +30,7 @@ const ApiConfiguration: React.FC = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      await updateProfile({
-        section: "api",
+      await registerProfile({
         payload: {
           cashfree_app_id: appId,
           cashfree_secret_key: secret,

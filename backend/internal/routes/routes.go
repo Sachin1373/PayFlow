@@ -3,6 +3,9 @@ package routes
 import (
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/auth"
+	"github.com/Sachin1373/payflow/backend/internal/cashfree"
+	"github.com/Sachin1373/payflow/backend/internal/middleware"
+	"github.com/Sachin1373/payflow/backend/internal/profile"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,5 +25,20 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	{
 		auth.POST("/register", authHandler.Register)
 		auth.POST("/login", authHandler.Login)
+	}
+
+	profileHandler := profile.NewModule(app)
+	profile := v1.Group("/profile")
+	profile.Use(middleware.Authorization(app.Config.JWTSecret))
+
+	{
+		profile.POST("/register", profileHandler.BusinessProfileRegister)
+	}
+
+	cashfreeHandler := cashfree.NewModule(app)
+	webhooks := v1.Group("/webhooks")
+
+	{
+		webhooks.POST("/cashfree", cashfreeHandler.Webhook)
 	}
 }
