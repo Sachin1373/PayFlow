@@ -8,7 +8,7 @@ const links = [
   { to: "/invoices", label: "Invoices", icon: FileText },
   { to: "/orders", label: "Orders", icon: ShoppingCart },
   { to: "/customers", label: "Customers", icon: Users },
-  { to: "/settings", label: "Profile Setup", icon: Settings },
+  { to: "/settings", label: "Profile", icon: Settings },
 ];
 
 interface User {
@@ -73,10 +73,10 @@ const Sidebar = () => {
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition
+              `flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground transition
               ${isActive
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "hover:bg-sidebar-accent/60"
+                ? "bg-sidebar-accent/50 text-sidebar-accent-foreground"
+                : "hover:bg-sidebar-accent/10"
               }`
             }
           >
