@@ -1,0 +1,58 @@
+package invoices
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"time"
+)
+
+type InvoiceService struct {
+	repo *InvoiceRepository
+}
+
+func NewAuthService(repo *InvoiceRepository) *InvoiceService {
+	return &InvoiceService{
+		repo: repo,
+	}
+}
+
+func (s *InvoiceService) CreateInvoice(ctx context.Context, businessID string, req *CreateInvoiceRequest) error {
+	if req.Customer.CustomerName == "" {
+		return errors.New("customer name is required")
+	}
+
+	if len(req.Items) == 0 {
+		return errors.New("at least one line item is required")
+	}
+
+	req.Invoice.InvoiceNo = fmt.Sprintf(
+		"INV-%d",
+		time.Now().Unix(),
+	)
+
+	customer, err := s.repo.FindCustomer(ctx, req.Customer.CustomerEmail)
+
+	if err != nil {
+		customerID, err := s.repo.CreateCustomer(
+			ctx,
+			businessID,
+			&req.Customer,
+		)
+
+		if err != nil {
+			return err
+		}
+
+		customer = &CustomerReq{
+			CustomerUuid: customerID,
+		}
+	}
+
+	return s.repo.CreateInvoice(
+		ctx,
+		businessID,
+		customer.CustomerUuid,
+		req,
+	)
+}

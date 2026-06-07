@@ -4,6 +4,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/auth"
 	"github.com/Sachin1373/payflow/backend/internal/cashfree"
+	"github.com/Sachin1373/payflow/backend/internal/invoices"
 	"github.com/Sachin1373/payflow/backend/internal/middleware"
 	"github.com/Sachin1373/payflow/backend/internal/profile"
 	"github.com/gin-gonic/gin"
@@ -40,5 +41,13 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 
 	{
 		webhooks.POST("/cashfree", cashfreeHandler.Webhook)
+	}
+
+	invoiceHandler := invoices.NewModule(app)
+	invoice := v1.Group("/invoice")
+	invoice.Use(middleware.Authorization(app.Config.JWTSecret))
+
+	{
+		invoice.POST("/create", invoiceHandler.CreateInvoice)
 	}
 }
