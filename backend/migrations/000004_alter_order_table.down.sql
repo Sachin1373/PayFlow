@@ -1,0 +1,2 @@
+ALTER TABLE orders
+REMOVE COLUMN link_id;

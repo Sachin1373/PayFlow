@@ -128,3 +128,34 @@ func (h *InvoiceHandler) GetInvoices(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func (h *InvoiceHandler) SendInvoice(c *gin.Context) {
+
+	businessID, exists := c.Get("business_id")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "business id not found",
+		})
+		return
+	}
+
+	invoiceID := c.Param("id")
+
+	err := h.service.SendInvoice(
+		c.Request.Context(),
+		invoiceID,
+		businessID.(string),
+	)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "invoice sent successfully",
+	})
+}

@@ -8,9 +8,14 @@ import (
 )
 
 type Config struct {
-	AppPort   string
-	DBURL     string
-	JWTSecret string
+	AppPort              string
+	DBURL                string
+	JWTSecret            string
+	MailApiKey           string
+	MailFrom             string
+	CashfreeClientID     string
+	CashfreeClientSecret string
+	CashfreeEnv          string
 	// RedisHost     string
 	// RedisPort     string
 	// RedisPassword string
@@ -24,9 +29,14 @@ func Load() *Config {
 	}
 
 	return &Config{
-		AppPort:   getEnv("APP_PORT", "8080"),
-		DBURL:     getEnv("DB_URL", ""),
-		JWTSecret: getEnv("JWT_SECRET", ""),
+		AppPort:              getEnv("APP_PORT", "8080"),
+		DBURL:                getEnv("DB_URL", ""),
+		JWTSecret:            getEnv("JWT_SECRET", ""),
+		MailApiKey:           getEnv("MAIL_API_KEY", ""),
+		MailFrom:             getEnv("EMAIL_FROM", ""),
+		CashfreeClientID:     getEnv("CASHFREE_CLIENT_ID", ""),
+		CashfreeClientSecret: getEnv("CASHFREE_CLIENT_SECRET", ""),
+		CashfreeEnv:          getEnv("CASHFREE_ENV", ""),
 		// RedisHost:     getEnv("REDIS_HOST", "localhost"),
 		// RedisPort:     getEnv("REDIS_PORT", "6379"),
 		// RedisPassword: getEnv("REDIS_PASSWORD", ""),

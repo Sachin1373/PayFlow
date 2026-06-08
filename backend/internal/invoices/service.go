@@ -4,16 +4,27 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
+
+	"github.com/Sachin1373/payflow/backend/internal/cashfree"
+	"github.com/Sachin1373/payflow/backend/internal/email"
+	"github.com/Sachin1373/payflow/backend/internal/orders"
 )
 
 type InvoiceService struct {
-	repo *InvoiceRepository
+	repo            *InvoiceRepository
+	orderRepo       *orders.OrderRepository
+	cashfreeService *cashfree.Service
+	emailService    *email.Service
 }
 
-func NewAuthService(repo *InvoiceRepository) *InvoiceService {
+func NewInvoiceService(repo *InvoiceRepository, orderRepo *orders.OrderRepository, cashfreeService *cashfree.Service, emailService *email.Service) *InvoiceService {
 	return &InvoiceService{
-		repo: repo,
+		repo:            repo,
+		orderRepo:       orderRepo,
+		cashfreeService: cashfreeService,
+		emailService:    emailService,
 	}
 }
 
@@ -98,4 +109,89 @@ func (s *InvoiceService) GetInvoices(
 		fromDate,
 		toDate,
 	)
+}
+
+func (s *InvoiceService) SendInvoice(
+	ctx context.Context,
+	invoiceID string,
+	businessID string,
+) error {
+
+	invoice, err := s.repo.GetInvoiceByID(
+		ctx,
+		invoiceID,
+		businessID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	exists, err := s.orderRepo.CheckExistingOrder(
+		ctx,
+		invoiceID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return errors.New("pending order already exists")
+	}
+
+	linkReq := cashfree.CreatePaymentLinkRequest{
+		CustomerDetails: cashfree.CustomerDetails{
+			CustomerName:  invoice.CustomerName,
+			CustomerEmail: invoice.CustomerEmail,
+			CustomerPhone: invoice.CustomerPhone,
+		},
+
+		LinkAmount:          float64(invoice.TotalAmount),
+		LinkCurrency:        "INR",
+		LinkPurpose:         invoice.InvoiceNo,
+		LinkPartialPayments: false,
+	}
+
+	paymentLink, err := s.cashfreeService.CreatePaymentLink(
+		ctx,
+		linkReq,
+	)
+
+	log.Println("paymentLink :", paymentLink)
+
+	log.Printf(
+		"Payment Link Created: %s",
+		paymentLink.LinkURL,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	// save order
+
+	err = s.orderRepo.CreateOrder(
+		ctx,
+		businessID,
+		&orders.CreateOrderParams{
+			InvoiceID:     invoice.InvoiceID,
+			CFOrderID:     paymentLink.CFLinkID,
+			CFPaymentLink: paymentLink.LinkURL,
+			Amount:        paymentLink.LinkAmount,
+			Currency:      paymentLink.LinkCurrency,
+			Status:        paymentLink.LinkStatus,
+			ExpiresAt:     paymentLink.LinkExpiry,
+			LinkId:        paymentLink.LinkID,
+		},
+	)
+
+	if err != nil {
+		return err
+	}
+
+	// send email
+	
+
+	return nil
 }
