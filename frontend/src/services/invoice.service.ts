@@ -81,3 +81,8 @@ export const getInvoiceById = async (id: string): Promise<InvoiceDetail> => {
   const res = await api.get(`/invoice/${id}`);
   return res.data;
 };
+
+export const sendInvoice = async (id: string): Promise<{ message: string }> => {
+  const res = await api.post(`/invoice/send/${id}`);
+  return res.data;
+};

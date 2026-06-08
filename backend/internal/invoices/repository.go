@@ -250,6 +250,14 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 	}, nil
 }
 
+func (i *InvoiceRepository) UpdateInvoiceStatus(ctx context.Context, invoiceID, status string) error {
+	_, err := i.db.Exec(ctx,
+		`UPDATE invoices SET status = $1, updated_at = NOW() WHERE id = $2`,
+		status, invoiceID,
+	)
+	return err
+}
+
 func (i *InvoiceRepository) GetInvoiceByID(ctx context.Context, invoiceID, businessID string) (*InvoiceDetail, error) {
 	var inv InvoiceDetail
 

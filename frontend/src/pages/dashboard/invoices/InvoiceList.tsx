@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePicker } from "@/components/ui/date-picker";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { toast } from "sonner";
-import { getInvoices, type Invoice } from "@/services/invoice.service";
+import { getInvoices, sendInvoice, type Invoice } from "@/services/invoice.service";
 import { StatusBadge } from "./StatusBadge";
 import { fmtDate, fmtAmount } from "./utils";
 import { useDebounce } from "@/lib/utils";
@@ -21,7 +21,11 @@ interface CommittedFilters {
 
 const LIMIT = 10;
 
-function makeColumns(onView: (id: string) => void): Column<Invoice>[] {
+function makeColumns(
+  onView: (id: string) => void,
+  onSend: (id: string) => void,
+  sendingId: string | null,
+): Column<Invoice>[] {
   return [
     {
       key: "invoice_no",
@@ -59,7 +63,9 @@ function makeColumns(onView: (id: string) => void): Column<Invoice>[] {
       className: "text-right",
       render: (inv) => {
         const s = inv.status.toUpperCase();
+        const canSend = s === "DRAFT";
         const canPay = s === "SENT" || s === "DRAFT";
+        const isSending = sendingId === inv.invoice_id;
         return (
           <div className="flex items-center justify-end gap-3">
             <button
@@ -68,9 +74,15 @@ function makeColumns(onView: (id: string) => void): Column<Invoice>[] {
             >
               View
             </button>
-            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Send
-            </button>
+            {canSend && (
+              <button
+                onClick={() => onSend(inv.invoice_id)}
+                disabled={isSending}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSending ? "Sending…" : "Send"}
+              </button>
+            )}
             {canPay && <Button size="xs" className="px-3">Pay</Button>}
           </div>
         );
@@ -100,7 +112,7 @@ export function InvoiceList({ onCreateClick }: { onCreateClick: () => void }) {
   });
 
   const [viewId, setViewId] = useState<string | null>(null);
-  const columns = useMemo(() => makeColumns(setViewId), []);
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   const fetchInvoices = useCallback(async (f: CommittedFilters, p: number) => {
     setLoading(true);
@@ -121,6 +133,21 @@ export function InvoiceList({ onCreateClick }: { onCreateClick: () => void }) {
       setLoading(false);
     }
   }, []);
+
+  const handleSend = useCallback(async (id: string) => {
+    setSendingId(id);
+    try {
+      await sendInvoice(id);
+      toast.success("Invoice sent successfully");
+      fetchInvoices(filters, page);
+    } catch {
+      toast.error("Failed to send invoice");
+    } finally {
+      setSendingId(null);
+    }
+  }, [fetchInvoices, filters, page]);
+
+  const columns = useMemo(() => makeColumns(setViewId, handleSend, sendingId), [handleSend, sendingId]);
 
   useEffect(() => {
     fetchInvoices(filters, page);

@@ -191,7 +191,39 @@ func (s *InvoiceService) SendInvoice(
 	}
 
 	// send email
-	
+	emailData := email.InvoiceEmailData{
+		CustomerName: invoice.CustomerName,
+		InvoiceNo:    invoice.InvoiceNo,
+		InvoiceDate:  invoice.CreatedAt,
+		DueDate:      invoice.DueDate,
+		Subtotal:     invoice.Subtotal,
+		TaxRate:      invoice.TaxRate,
+		TaxAmount:    invoice.TaxAmount,
+		TotalAmount:  invoice.TotalAmount,
+		Description:  invoice.Description,
+		PaymentLink:  paymentLink.LinkURL,
+	}
+	for _, item := range invoice.Items {
+		emailData.Items = append(emailData.Items, email.InvoiceEmailItem{
+			Description: item.Description,
+			Quantity:    item.Quantity,
+			UnitPrice:   item.UnitPrice,
+			Amount:      item.Amount,
+		})
+	}
+
+	if err := s.emailService.Send(
+		ctx,
+		invoice.CustomerEmail,
+		fmt.Sprintf("Invoice %s from PayFlow", invoice.InvoiceNo),
+		email.InvoiceTemplate(emailData),
+	); err != nil {
+		log.Printf("failed to send invoice email: %v", err)
+	}
+
+	if err := s.repo.UpdateInvoiceStatus(ctx, invoice.InvoiceID, "SENT"); err != nil {
+		log.Printf("failed to update invoice status: %v", err)
+	}
 
 	return nil
 }
