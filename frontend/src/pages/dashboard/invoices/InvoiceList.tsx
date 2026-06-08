@@ -64,7 +64,6 @@ function makeColumns(
       render: (inv) => {
         const s = inv.status.toUpperCase();
         const canSend = s === "DRAFT";
-        const canPay = s === "SENT" || s === "DRAFT";
         const isSending = sendingId === inv.invoice_id;
         return (
           <div className="flex items-center justify-end gap-3">
@@ -83,7 +82,6 @@ function makeColumns(
                 {isSending ? "Sending…" : "Send"}
               </button>
             )}
-            {canPay && <Button size="xs" className="px-3">Pay</Button>}
           </div>
         );
       },

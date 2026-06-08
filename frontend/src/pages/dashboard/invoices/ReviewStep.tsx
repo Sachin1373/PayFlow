@@ -87,11 +87,8 @@ export function ReviewStep({
           Back
         </Button>
         <div className="flex gap-3">
-          <Button variant="outline" size="lg" onClick={() => onSave(true)} disabled={saving}>
-            Save as Draft
-          </Button>
           <Button size="lg" onClick={() => onSave(false)} disabled={saving} className="px-5">
-            {saving ? "Saving…" : "Save & Generate Payment Link"}
+            {saving ? "Saving…" : "Create Invoice" }
           </Button>
         </div>
       </div>

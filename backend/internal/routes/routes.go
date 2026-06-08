@@ -6,6 +6,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/customers"
 	"github.com/Sachin1373/payflow/backend/internal/invoices"
 	"github.com/Sachin1373/payflow/backend/internal/middleware"
+	"github.com/Sachin1373/payflow/backend/internal/orders"
 	"github.com/Sachin1373/payflow/backend/internal/profile"
 	"github.com/gin-gonic/gin"
 )
@@ -62,5 +63,14 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 		customer.GET("/list", customerHandler.ListCustomers)
 		customer.POST("/create", customerHandler.CreateCustomer)
 		customer.GET("/search", customerHandler.SearchCustomers)
+	}
+
+	orderHandler := orders.NewModule(app)
+	order := v1.Group("/order")
+	order.Use(middleware.Authorization(app.Config.JWTSecret))
+
+	{
+		order.GET("/list", orderHandler.GetOrders)
+		order.GET("/:id", orderHandler.GetOrder)
 	}
 }
