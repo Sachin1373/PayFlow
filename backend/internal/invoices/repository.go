@@ -2,6 +2,7 @@ package invoices
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -142,4 +143,90 @@ func (i *InvoiceRepository) CreateInvoice(ctx context.Context, businessID string
 
 	return tx.Commit(ctx)
 
+}
+
+func (i *InvoiceRepository) GetInvoicesPaginated(
+	ctx context.Context,
+	businessID string,
+	limit int,
+	offset int,
+	status *string,
+) (*PaginatedInvoices, error) {
+
+	var invoices []Invoice
+	var total int
+
+	// Base query parts
+	baseQuery := `
+		FROM invoices inv
+		JOIN customers c ON c.id = inv.customer_id
+		WHERE inv.business_id = $1
+	`
+
+	args := []interface{}{businessID}
+	argIndex := 2
+
+	// Optional filter
+	if status != nil && *status != "" {
+		baseQuery += " AND inv.status = $" + fmt.Sprint(argIndex)
+		args = append(args, *status)
+		argIndex++
+	}
+
+	// Count query
+	countQuery := "SELECT COUNT(*) " + baseQuery
+
+	err := i.db.QueryRow(ctx, countQuery, args...).Scan(&total)
+	if err != nil {
+		return nil, err
+	}
+
+	// Data query
+	query := `
+		SELECT
+			inv.id,
+			inv.invoice_no,
+			c.name,
+			inv.total_amount,
+			inv.status,
+			inv.due_date,
+			inv.created_at
+	` + baseQuery + `
+		ORDER BY inv.created_at DESC
+		LIMIT $` + fmt.Sprint(argIndex) + `
+		OFFSET $` + fmt.Sprint(argIndex+1)
+
+	args = append(args, limit, offset)
+
+	rows, err := i.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var inv Invoice
+
+		err := rows.Scan(
+			&inv.InvoiceID,
+			&inv.InvoiceNo,
+			&inv.CustomerName,
+			&inv.TotalAmount,
+			&inv.Status,
+			&inv.DueDate,
+			&inv.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		invoices = append(invoices, inv)
+	}
+
+	return &PaginatedInvoices{
+		Data:  invoices,
+		Total: total,
+		Page:  offset / limit,
+		Limit: limit,
+	}, nil
 }

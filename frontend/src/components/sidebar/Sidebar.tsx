@@ -75,7 +75,7 @@ const Sidebar = () => {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-md text-muted-foreground transition
               ${isActive
-                ? "bg-sidebar-accent/50 text-sidebar-accent-foreground"
+                ? "bg-sidebar-accent/80 text-sidebar-accent-foreground"
                 : "hover:bg-sidebar-accent/10"
               }`
             }

@@ -56,3 +56,35 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, businessID string, r
 		req,
 	)
 }
+
+func (s *InvoiceService) GetInvoices(
+	ctx context.Context,
+	businessID string,
+	page int,
+	limit int,
+	status *string,
+) (*PaginatedInvoices, error) {
+
+	// safety defaults
+	if page <= 0 {
+		page = 1
+	}
+
+	if limit <= 0 {
+		limit = 10
+	}
+
+	if limit > 100 {
+		limit = 100
+	}
+
+	offset := (page - 1) * limit
+
+	return s.repo.GetInvoicesPaginated(
+		ctx,
+		businessID,
+		limit,
+		offset,
+		status,
+	)
+}
