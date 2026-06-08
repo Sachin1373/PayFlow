@@ -55,6 +55,28 @@ func (h *InvoiceHandler) CreateInvoice(c *gin.Context) {
 	})
 }
 
+func (h *InvoiceHandler) GetInvoice(c *gin.Context) {
+	businessID, exists := c.Get("business_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "business id not found"})
+		return
+	}
+
+	invoiceID := c.Param("id")
+	if invoiceID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invoice id is required"})
+		return
+	}
+
+	result, err := h.service.GetInvoiceByID(c.Request.Context(), invoiceID, businessID.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (h *InvoiceHandler) GetInvoices(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	limit := c.DefaultQuery("limit", "10")

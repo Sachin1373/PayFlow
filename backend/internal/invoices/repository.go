@@ -249,3 +249,65 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 		Limit: limit,
 	}, nil
 }
+
+func (i *InvoiceRepository) GetInvoiceByID(ctx context.Context, invoiceID, businessID string) (*InvoiceDetail, error) {
+	var inv InvoiceDetail
+
+	err := i.db.QueryRow(ctx, `
+		SELECT
+			inv.id,
+			inv.invoice_no,
+			c.name,
+			c.email,
+			c.mobile_no,
+			COALESCE(inv.description, ''),
+			inv.subtotal,
+			inv.tax_rate,
+			inv.tax_amount,
+			inv.total_amount,
+			inv.status,
+			inv.due_date,
+			inv.created_at
+		FROM invoices inv
+		JOIN customers c ON c.id = inv.customer_id
+		WHERE inv.id = $1 AND inv.business_id = $2
+	`, invoiceID, businessID).Scan(
+		&inv.InvoiceID,
+		&inv.InvoiceNo,
+		&inv.CustomerName,
+		&inv.CustomerEmail,
+		&inv.CustomerPhone,
+		&inv.Description,
+		&inv.Subtotal,
+		&inv.TaxRate,
+		&inv.TaxAmount,
+		&inv.TotalAmount,
+		&inv.Status,
+		&inv.DueDate,
+		&inv.CreatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := i.db.Query(ctx, `
+		SELECT description, quantity, unit_price, amount
+		FROM invoice_items
+		WHERE invoice_id = $1
+	`, invoiceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	inv.Items = []LineItem{}
+	for rows.Next() {
+		var item LineItem
+		if err := rows.Scan(&item.Description, &item.Quantity, &item.UnitPrice, &item.Amount); err != nil {
+			return nil, err
+		}
+		inv.Items = append(inv.Items, item)
+	}
+
+	return &inv, nil
+}

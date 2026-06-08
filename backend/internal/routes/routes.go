@@ -51,6 +51,7 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	{
 		invoice.POST("/create", invoiceHandler.CreateInvoice)
 		invoice.GET("/get", invoiceHandler.GetInvoices)
+		invoice.GET("/:id", invoiceHandler.GetInvoice)
 	}
 
 	customerHandler := customers.NewModule(app)

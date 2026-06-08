@@ -57,6 +57,13 @@ func (s *InvoiceService) CreateInvoice(ctx context.Context, businessID string, r
 	)
 }
 
+func (s *InvoiceService) GetInvoiceByID(ctx context.Context, invoiceID, businessID string) (*InvoiceDetail, error) {
+	if invoiceID == "" {
+		return nil, errors.New("invoice id is required")
+	}
+	return s.repo.GetInvoiceByID(ctx, invoiceID, businessID)
+}
+
 func (s *InvoiceService) GetInvoices(
 	ctx context.Context,
 	businessID string,

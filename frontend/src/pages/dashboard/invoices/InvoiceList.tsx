@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { getInvoices, type Invoice } from "@/services/invoice.service";
 import { StatusBadge } from "./StatusBadge";
 import { fmtDate, fmtAmount } from "./utils";
 import { useDebounce } from "@/lib/utils";
+import { InvoiceDetailModal } from "./InvoiceDetailModal";
 
 interface CommittedFilters {
   search: string;
@@ -20,58 +21,63 @@ interface CommittedFilters {
 
 const LIMIT = 10;
 
-const COLUMNS: Column<Invoice>[] = [
-  {
-    key: "invoice_no",
-    label: "Invoice No",
-    className: "font-medium text-foreground",
-  },
-  { key: "customer_name", label: "Customer", className: "text-foreground" },
-  {
-    key: "total_amount",
-    label: "Amount",
-    className: "text-foreground",
-    render: (inv) => fmtAmount(inv.total_amount),
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (inv) => <StatusBadge status={inv.status} />,
-  },
-  {
-    key: "due_date",
-    label: "Due Date",
-    className: "text-muted-foreground",
-    render: (inv) => fmtDate(inv.due_date),
-  },
-  {
-    key: "created_at",
-    label: "Created",
-    className: "text-muted-foreground",
-    render: (inv) => fmtDate(inv.created_at),
-  },
-  {
-    key: "actions",
-    label: "Actions",
-    headerClassName: "text-right",
-    className: "text-right",
-    render: (inv) => {
-      const s = inv.status.toUpperCase();
-      const canPay = s === "SENT" || s === "DRAFT";
-      return (
-        <div className="flex items-center justify-end gap-3">
-          <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            View
-          </button>
-          <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Send
-          </button>
-          {canPay && <Button size="xs" className="px-3">Pay</Button>}
-        </div>
-      );
+function makeColumns(onView: (id: string) => void): Column<Invoice>[] {
+  return [
+    {
+      key: "invoice_no",
+      label: "Invoice No",
+      className: "font-medium text-foreground",
     },
-  },
-];
+    { key: "customer_name", label: "Customer", className: "text-foreground" },
+    {
+      key: "total_amount",
+      label: "Amount",
+      className: "text-foreground",
+      render: (inv) => fmtAmount(inv.total_amount),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (inv) => <StatusBadge status={inv.status} />,
+    },
+    {
+      key: "due_date",
+      label: "Due Date",
+      className: "text-muted-foreground",
+      render: (inv) => fmtDate(inv.due_date),
+    },
+    {
+      key: "created_at",
+      label: "Created",
+      className: "text-muted-foreground",
+      render: (inv) => fmtDate(inv.created_at),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      headerClassName: "text-right",
+      className: "text-right",
+      render: (inv) => {
+        const s = inv.status.toUpperCase();
+        const canPay = s === "SENT" || s === "DRAFT";
+        return (
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => onView(inv.invoice_id)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View
+            </button>
+            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Send
+            </button>
+            {canPay && <Button size="xs" className="px-3">Pay</Button>}
+          </div>
+        );
+      },
+    },
+  ];
+}
 
 export function InvoiceList({ onCreateClick }: { onCreateClick: () => void }) {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -92,6 +98,9 @@ export function InvoiceList({ onCreateClick }: { onCreateClick: () => void }) {
     fromDate: "",
     toDate: "",
   });
+
+  const [viewId, setViewId] = useState<string | null>(null);
+  const columns = useMemo(() => makeColumns(setViewId), []);
 
   const fetchInvoices = useCallback(async (f: CommittedFilters, p: number) => {
     setLoading(true);
@@ -136,6 +145,7 @@ const applyFilters = () => {
 };
 
   return (
+    <>
     <div className="flex flex-col gap-5 flex-1 p-6 md:p-8 max-w-[1400px] w-full mx-auto">
       <div className="flex items-center justify-between">
         <div>
@@ -181,7 +191,7 @@ const applyFilters = () => {
       </div>
 
       <DataTable<Invoice>
-        columns={COLUMNS}
+        columns={columns}
         data={invoices}
         loading={loading}
         emptyMessage="No invoices found"
@@ -189,5 +199,8 @@ const applyFilters = () => {
         pagination={{ total, page, limit: LIMIT, onPageChange: setPage }}
       />
     </div>
+
+    <InvoiceDetailModal invoiceId={viewId} onClose={() => setViewId(null)} />
+    </>
   );
 }

@@ -41,6 +41,23 @@ export interface PaginatedInvoices {
   limit: number;
 }
 
+export interface InvoiceDetail {
+  invoice_id: string;
+  invoice_no: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string;
+  description: string;
+  sub_total: number;
+  tax_rate: number;
+  tax_amount: number;
+  total_amount: number;
+  status: string;
+  due_date: string;
+  created_at: string;
+  items: LineItem[];
+}
+
 export interface GetInvoicesParams {
   page?: number;
   limit?: number;
@@ -57,5 +74,10 @@ export const getInvoices = async (params: GetInvoicesParams): Promise<PaginatedI
 
 export const createInvoice = async (payload: CreateInvoicePayload) => {
   const res = await api.post("/invoice/create", payload);
+  return res.data;
+};
+
+export const getInvoiceById = async (id: string): Promise<InvoiceDetail> => {
+  const res = await api.get(`/invoice/${id}`);
   return res.data;
 };

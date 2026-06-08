@@ -48,3 +48,20 @@ type PaginatedInvoices struct {
 	Page  int       `json:"page"`
 	Limit int       `json:"limit"`
 }
+
+type InvoiceDetail struct {
+	InvoiceID     string     `json:"invoice_id"`
+	InvoiceNo     string     `json:"invoice_no"`
+	CustomerName  string     `json:"customer_name"`
+	CustomerEmail string     `json:"customer_email"`
+	CustomerPhone string     `json:"customer_phone"`
+	Description   string     `json:"description"`
+	Subtotal      float64    `json:"sub_total"`
+	TaxRate       float64    `json:"tax_rate"`
+	TaxAmount     float64    `json:"tax_amount"`
+	TotalAmount   float64    `json:"total_amount"`
+	Status        string     `json:"status"`
+	DueDate       time.Time  `json:"due_date"`
+	CreatedAt     time.Time  `json:"created_at"`
+	Items         []LineItem `json:"items"`
+}
