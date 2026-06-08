@@ -4,6 +4,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/auth"
 	"github.com/Sachin1373/payflow/backend/internal/cashfree"
+	"github.com/Sachin1373/payflow/backend/internal/customers"
 	"github.com/Sachin1373/payflow/backend/internal/invoices"
 	"github.com/Sachin1373/payflow/backend/internal/middleware"
 	"github.com/Sachin1373/payflow/backend/internal/profile"
@@ -50,5 +51,15 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	{
 		invoice.POST("/create", invoiceHandler.CreateInvoice)
 		invoice.GET("/get", invoiceHandler.GetInvoices)
+	}
+
+	customerHandler := customers.NewModule(app)
+	customer := v1.Group("/customer")
+	customer.Use(middleware.Authorization(app.Config.JWTSecret))
+
+	{
+		customer.GET("/list", customerHandler.ListCustomers)
+		customer.POST("/create", customerHandler.CreateCustomer)
+		customer.GET("/search", customerHandler.SearchCustomers)
 	}
 }

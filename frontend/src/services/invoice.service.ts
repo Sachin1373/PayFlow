@@ -41,11 +41,16 @@ export interface PaginatedInvoices {
   limit: number;
 }
 
-export const getInvoices = async (params: {
+export interface GetInvoicesParams {
   page?: number;
   limit?: number;
   status?: string;
-}): Promise<PaginatedInvoices> => {
+  search?: string;
+  from_date?: string;
+  to_date?: string;
+}
+
+export const getInvoices = async (params: GetInvoicesParams): Promise<PaginatedInvoices> => {
   const res = await api.get("/invoice/get", { params });
   return res.data;
 };

@@ -56,42 +56,36 @@ func (h *InvoiceHandler) CreateInvoice(c *gin.Context) {
 }
 
 func (h *InvoiceHandler) GetInvoices(c *gin.Context) {
-
-	// query params
 	page := c.DefaultQuery("page", "1")
 	limit := c.DefaultQuery("limit", "10")
 	status := c.Query("status")
+	search := c.Query("search")
+	fromDate := c.Query("from_date")
+	toDate := c.Query("to_date")
 
-	// convert to int
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid page",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid page"})
 		return
 	}
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid limit",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
 		return
 	}
 
-	// get business id from middleware
 	businessID, exists := c.Get("business_id")
 	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "business id not found",
-		})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "business id not found"})
 		return
 	}
 
-	// optional filter
-	var statusPtr *string
-	if status != "" {
-		statusPtr = &status
+	toPtr := func(s string) *string {
+		if s == "" {
+			return nil
+		}
+		return &s
 	}
 
 	result, err := h.service.GetInvoices(
@@ -99,13 +93,14 @@ func (h *InvoiceHandler) GetInvoices(c *gin.Context) {
 		businessID.(string),
 		pageInt,
 		limitInt,
-		statusPtr,
+		toPtr(status),
+		toPtr(search),
+		toPtr(fromDate),
+		toPtr(toDate),
 	)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

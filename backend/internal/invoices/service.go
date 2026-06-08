@@ -63,17 +63,17 @@ func (s *InvoiceService) GetInvoices(
 	page int,
 	limit int,
 	status *string,
+	search *string,
+	fromDate *string,
+	toDate *string,
 ) (*PaginatedInvoices, error) {
 
-	// safety defaults
 	if page <= 0 {
 		page = 1
 	}
-
 	if limit <= 0 {
 		limit = 10
 	}
-
 	if limit > 100 {
 		limit = 100
 	}
@@ -85,6 +85,10 @@ func (s *InvoiceService) GetInvoices(
 		businessID,
 		limit,
 		offset,
+		page,
 		status,
+		search,
+		fromDate,
+		toDate,
 	)
 }

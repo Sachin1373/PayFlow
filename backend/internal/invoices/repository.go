@@ -150,13 +150,16 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 	businessID string,
 	limit int,
 	offset int,
+	page int,
 	status *string,
+	search *string,
+	fromDate *string,
+	toDate *string,
 ) (*PaginatedInvoices, error) {
 
 	var invoices []Invoice
 	var total int
 
-	// Base query parts
 	baseQuery := `
 		FROM invoices inv
 		JOIN customers c ON c.id = inv.customer_id
@@ -166,22 +169,36 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 	args := []interface{}{businessID}
 	argIndex := 2
 
-	// Optional filter
 	if status != nil && *status != "" {
 		baseQuery += " AND inv.status = $" + fmt.Sprint(argIndex)
 		args = append(args, *status)
 		argIndex++
 	}
 
-	// Count query
-	countQuery := "SELECT COUNT(*) " + baseQuery
+	if search != nil && *search != "" {
+		baseQuery += " AND (c.name ILIKE $" + fmt.Sprint(argIndex) + " OR inv.invoice_no ILIKE $" + fmt.Sprint(argIndex) + ")"
+		args = append(args, "%"+*search+"%")
+		argIndex++
+	}
 
+	if fromDate != nil && *fromDate != "" {
+		baseQuery += " AND DATE(inv.created_at) >= $" + fmt.Sprint(argIndex)
+		args = append(args, *fromDate)
+		argIndex++
+	}
+
+	if toDate != nil && *toDate != "" {
+		baseQuery += " AND DATE(inv.created_at) <= $" + fmt.Sprint(argIndex)
+		args = append(args, *toDate)
+		argIndex++
+	}
+
+	countQuery := "SELECT COUNT(*) " + baseQuery
 	err := i.db.QueryRow(ctx, countQuery, args...).Scan(&total)
 	if err != nil {
 		return nil, err
 	}
 
-	// Data query
 	query := `
 		SELECT
 			inv.id,
@@ -206,7 +223,6 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 
 	for rows.Next() {
 		var inv Invoice
-
 		err := rows.Scan(
 			&inv.InvoiceID,
 			&inv.InvoiceNo,
@@ -219,14 +235,17 @@ func (i *InvoiceRepository) GetInvoicesPaginated(
 		if err != nil {
 			return nil, err
 		}
-
 		invoices = append(invoices, inv)
+	}
+
+	if invoices == nil {
+		invoices = []Invoice{}
 	}
 
 	return &PaginatedInvoices{
 		Data:  invoices,
 		Total: total,
-		Page:  offset / limit,
+		Page:  page,
 		Limit: limit,
 	}, nil
 }
