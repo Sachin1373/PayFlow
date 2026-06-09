@@ -25,6 +25,9 @@ A payment management platform for businesses — create invoices, track orders, 
 
 ---
 
+## DataBase Design
+[database_design](https://drawsql.app/teams/sachin-vijaykumar/diagrams/payflow)
+
 ## Setup
 
 ### 1. Clone & configure
