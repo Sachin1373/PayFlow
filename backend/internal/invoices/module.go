@@ -25,7 +25,7 @@ func NewModule(
 		app.Config.CashfreeEnv,
 	)
 
-	cashfreeService := cashfree.NewService(cashfreeClient)
+	cashfreeService := cashfree.CashfreeNewService(cashfreeClient)
 
 	service := NewInvoiceService(
 		repo,

@@ -15,11 +15,11 @@ import (
 type InvoiceService struct {
 	repo            *InvoiceRepository
 	orderRepo       *orders.OrderRepository
-	cashfreeService *cashfree.Service
+	cashfreeService *cashfree.CashfreeService
 	emailService    *email.Service
 }
 
-func NewInvoiceService(repo *InvoiceRepository, orderRepo *orders.OrderRepository, cashfreeService *cashfree.Service, emailService *email.Service) *InvoiceService {
+func NewInvoiceService(repo *InvoiceRepository, orderRepo *orders.OrderRepository, cashfreeService *cashfree.CashfreeService, emailService *email.Service) *InvoiceService {
 	return &InvoiceService{
 		repo:            repo,
 		orderRepo:       orderRepo,

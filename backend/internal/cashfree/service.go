@@ -6,30 +6,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
-type Service struct {
+type CashfreeService struct {
 	client *Client
 }
 
-func NewService(client *Client) *Service {
-	return &Service{
+func CashfreeNewService(client *Client) *CashfreeService {
+	return &CashfreeService{
 		client: client,
 	}
 }
 
-func (s *Service) CreatePaymentLink(
+func (s *CashfreeService) CreatePaymentLink(
 	ctx context.Context,
 	req CreatePaymentLinkRequest,
 ) (*CreatePaymentLinkResponse, error) {
-
-	// Pretty print request
-	reqJSON, _ := json.MarshalIndent(req, "", "  ")
-
-	log.Println("========== CASHFREE CREATE ORDER REQUEST ==========")
-	log.Println(string(reqJSON))
 
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -67,10 +60,6 @@ func (s *Service) CreatePaymentLink(
 		return nil, err
 	}
 
-	log.Println("========== CASHFREE PAYMENT LINK RESPONSE ==========")
-	log.Printf("Status: %s\n", resp.Status)
-	log.Println(string(respBody))
-
 	if resp.StatusCode >= 300 {
 		return nil, fmt.Errorf(
 			"cashfree returned status %d: %s",
@@ -86,11 +75,6 @@ func (s *Service) CreatePaymentLink(
 	if err != nil {
 		return nil, err
 	}
-
-	resultJSON, _ := json.MarshalIndent(result, "", "  ")
-
-	log.Println("========== CASHFREE PAYMENT LINK PARSED ==========")
-	log.Println(string(resultJSON))
 
 	return &result, nil
 }

@@ -648,3 +648,30 @@ curl -X POST https://your-tunnel/webhooks/cashfree \
 |☐|Loom demo recorded (5 min: create invoice → pay → dashboard updates)|
 |☐|GitHub repo is public with a clear README and demo GIF|
 
+
+
+Webhook
+   ↓
+Verify Signature
+   ↓
+Parse Payload
+   ↓
+Find Order
+   ↓
+Insert payment_event
+      ↓
+Duplicate?
+      ↓
+YES → Return 200
+      ↓
+NO
+      ↓
+SUCCESS?
+      ↓
+NO → Return 200
+      ↓
+Update Order PAID
+      ↓
+Update Invoice PAID
+      ↓
+Commit

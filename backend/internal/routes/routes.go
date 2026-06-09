@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/Sachin1373/payflow/backend/internal/app"
 	"github.com/Sachin1373/payflow/backend/internal/auth"
+	"github.com/Sachin1373/payflow/backend/internal/cashfree"
 	"github.com/Sachin1373/payflow/backend/internal/customers"
 	"github.com/Sachin1373/payflow/backend/internal/invoices"
 	"github.com/Sachin1373/payflow/backend/internal/middleware"
@@ -37,12 +38,12 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 		profile.POST("/register", profileHandler.BusinessProfileRegister)
 	}
 
-	// cashfreeHandler := cashfree.NewModule(app)
-	// webhooks := v1.Group("/webhooks")
+	cashfreeHandler := cashfree.NewModule(app)
+	webhooks := v1.Group("/webhooks")
 
-	// {
-	// 	webhooks.POST("/cashfree", cashfreeHandler.Webhook)
-	// }
+	{
+		webhooks.POST("/cashfree", cashfreeHandler.Webhook)
+	}
 
 	invoiceHandler := invoices.NewModule(app)
 	invoice := v1.Group("/invoice")
