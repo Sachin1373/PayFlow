@@ -17,20 +17,20 @@ const Notifications: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getProfile();
-        setNotif({
-          payment_received: Boolean(res?.notifications?.payment_received),
-          payment_failed: Boolean(res?.notifications?.payment_failed),
-          invoice_overdue: Boolean(res?.notifications?.invoice_overdue),
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const res = await getProfile();
+  //       setNotif({
+  //         payment_received: Boolean(res?.notifications?.payment_received),
+  //         payment_failed: Boolean(res?.notifications?.payment_failed),
+  //         invoice_overdue: Boolean(res?.notifications?.invoice_overdue),
+  //       });
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   })();
+  // }, []);
 
   const toggle = (key: keyof NotificationsState) => {
     setNotif((prev) => ({

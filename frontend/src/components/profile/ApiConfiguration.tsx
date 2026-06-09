@@ -13,19 +13,19 @@ const ApiConfiguration: React.FC = () => {
   const [env, setEnv] = useState<"sandbox" | "production">("sandbox");
   const [showSecrets, setShowSecrets] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getProfile();
-        setAppId(res?.cashfree_app_id || "");
-        setSecret(res?.cashfree_secret_key || "");
-        setWebhook(res?.webhook_secret || "");
-        setEnv(res?.env || "sandbox");
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const res = await getProfile();
+  //       setAppId(res?.cashfree_app_id || "");
+  //       setSecret(res?.cashfree_secret_key || "");
+  //       setWebhook(res?.webhook_secret || "");
+  //       setEnv(res?.env || "sandbox");
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   })();
+  // }, []);
 
   const handleSave = async () => {
     try {
@@ -113,7 +113,7 @@ const ApiConfiguration: React.FC = () => {
           </div>
         </div>
 
-        <div className="space-y-1">
+        {/* <div className="space-y-1">
           <label className="text-sm font-medium">Webhook Secret</label>
 
           <div className="relative">
@@ -133,7 +133,7 @@ const ApiConfiguration: React.FC = () => {
               {showSecrets ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <Button onClick={handleSave} disabled={loading}>

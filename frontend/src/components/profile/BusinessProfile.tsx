@@ -17,16 +17,16 @@ const BusinessProfile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getProfile();
-        setData(res || {});
-      } catch (err) {
-        console.error(err);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const res = await getProfile();
+  //       setData(res || {});
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   })();
+  // }, []);
 
   const handleChange = (k: keyof Data, v: string) => {
     setData((s) => ({ ...s, [k]: v }));

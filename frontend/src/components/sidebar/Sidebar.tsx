@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, ShoppingCart, Users, Settings, LogOut } from "lucide-react";
 import { jwtDecode } from 'jwt-decode';
+import { logoutUser } from "@/services/auth.service";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -37,6 +38,7 @@ const ZapIcon = () => (
 
 const Sidebar = () => {
   const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
@@ -56,10 +58,15 @@ const Sidebar = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.clear()
-    
-  }
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // proceed with local logout even if the request fails
+    }
+    localStorage.removeItem("accessToken");
+    navigate("/login");
+  };
 
   const initials =
     user?.first_name?.[0] + user?.last_name?.[0] || "U";
@@ -107,7 +114,7 @@ const Sidebar = () => {
               </span>
             </div>
           </div>
-          <button className="p-2 rounded-md shrink-0" onClick={handleLogout}>
+          <button className="p-2 rounded-md shrink-0 cursor-pointer" onClick={handleLogout}>
             <LogOut className="w-4 h-4 text-sidebar-foreground/70" />
           </button>
         </div>

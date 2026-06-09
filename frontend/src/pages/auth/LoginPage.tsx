@@ -28,7 +28,7 @@ export default function LoginPage() {
 
       const response = await loginUser(data);
 
-      localStorage.setItem("accessToken", response.token);
+      localStorage.setItem("accessToken", response.accessToken);
 
       showSuccess("Welcome back 👋 Login successful!");
 
