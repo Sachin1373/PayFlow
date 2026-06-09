@@ -56,6 +56,11 @@ const Sidebar = () => {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.clear()
+    
+  }
+
   const initials =
     user?.first_name?.[0] + user?.last_name?.[0] || "U";
 
@@ -102,7 +107,7 @@ const Sidebar = () => {
               </span>
             </div>
           </div>
-          <button className="p-2 rounded-md shrink-0">
+          <button className="p-2 rounded-md shrink-0" onClick={handleLogout}>
             <LogOut className="w-4 h-4 text-sidebar-foreground/70" />
           </button>
         </div>

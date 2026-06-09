@@ -5,6 +5,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/auth"
 	"github.com/Sachin1373/payflow/backend/internal/cashfree"
 	"github.com/Sachin1373/payflow/backend/internal/customers"
+	"github.com/Sachin1373/payflow/backend/internal/dashboard"
 	"github.com/Sachin1373/payflow/backend/internal/invoices"
 	"github.com/Sachin1373/payflow/backend/internal/middleware"
 	"github.com/Sachin1373/payflow/backend/internal/orders"
@@ -73,5 +74,13 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	{
 		order.GET("/list", orderHandler.GetOrders)
 		order.GET("/:id", orderHandler.GetOrder)
+	}
+
+	dashboardHandler := dashboard.NewModule(app)
+	dash := v1.Group("/dashboard")
+	dash.Use(middleware.Authorization(app.Config.JWTSecret))
+
+	{
+		dash.GET("/stats", dashboardHandler.GetStats)
 	}
 }
