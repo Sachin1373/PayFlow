@@ -47,22 +47,30 @@ func (s *AuthService) Register(ctx context.Context, req *RegisterRequest) error 
 	)
 }
 
-func (s *AuthService) Login(ctx context.Context, req *LoginRequest) (string, error) {
+func (s *AuthService) Login(ctx context.Context, req *LoginRequest) (string, string, error) {
 	business, err := s.repo.FindUserByEmail(ctx, req.Email)
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(business.Password), []byte(req.Password)); err != nil {
-		return "", errors.New("invalid credentials")
+		return "", "", errors.New("invalid credentials")
 	}
 
-	token, err := utils.GenerateToken(business.Uuid, business.Email, business.FirstName, business.LastName, s.jwtSecret)
-
+	accessToken, err := utils.GenerateAccessToken(business.Uuid, business.Email, business.FirstName, business.LastName, s.jwtSecret)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
-	return token, nil
+	refreshToken, err := utils.GenerateRefreshToken(business.Uuid, business.Email, s.jwtSecret)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func (s *AuthService) GetProfile(ctx context.Context, businessID string) (*UserProfile, error) {
+	return s.repo.GetProfile(ctx, businessID)
 }

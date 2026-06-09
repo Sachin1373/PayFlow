@@ -29,6 +29,14 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	{
 		auth.POST("/register", authHandler.Register)
 		auth.POST("/login", authHandler.Login)
+		auth.POST("/refresh", authHandler.Refresh)
+		auth.POST("/logout", authHandler.Logout)
+	}
+
+	authProtected := v1.Group("/auth")
+	authProtected.Use(middleware.Authorization(app.Config.JWTSecret))
+	{
+		authProtected.GET("/me", authHandler.GetProfile)
 	}
 
 	profileHandler := profile.NewModule(app)

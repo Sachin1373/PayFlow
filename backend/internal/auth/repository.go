@@ -85,3 +85,24 @@ func (r *BusinessRepository) FindUserByEmail(ctx context.Context, email string) 
 
 	return &business, nil
 }
+
+func (r *BusinessRepository) GetProfile(ctx context.Context, bussinessID string) (*UserProfile, error) {
+	var user UserProfile
+
+	err := r.db.QueryRow(ctx,
+		`
+		SELECT
+			first_name,
+			last_name,
+			email,
+			mobile_no
+		FROM business WHERE uuid = $1
+		`, bussinessID,
+	).Scan(&user.FirstName, &user.LastName, &user.Email, &user.MobileNo)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

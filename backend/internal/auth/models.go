@@ -21,3 +21,10 @@ type Business struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 }
+
+type UserProfile struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	MobileNo  string `json:"mobile_no"`
+	Email     string `json:"email"`
+}
