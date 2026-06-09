@@ -99,17 +99,17 @@ make frontend-run
 
 ## Screenshots
 
-### Login
-![Login](docs/screenshots/login.png)
-
 ### Dashboard
 ![Dashboard](docs/screenshots/dashboard.png)
 
 ### Invoices
-![Invoices](docs/screenshots/invoices.png)
+![Invoices](docs/screenshots/invoice_list.png)
 
 ### Orders
 ![Orders](docs/screenshots/orders.png)
 
 ### Customers
-![Customers](docs/screenshots/customers.png)
+![Customers](docs/screenshots/customer.png)
+
+### Bussiness
+![Bussiness](docs/screenshots/business_profile.png)
