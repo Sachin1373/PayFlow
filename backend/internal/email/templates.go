@@ -6,6 +6,14 @@ import (
 	"time"
 )
 
+type BusinessInfo struct {
+	BusinessName  string
+	BusinessEmail string
+	BusinessPhone string
+	GSTNumber     string
+	LogoURL       string
+}
+
 type InvoiceEmailData struct {
 	CustomerName string
 	InvoiceNo    string
@@ -18,6 +26,7 @@ type InvoiceEmailData struct {
 	TotalAmount  float64
 	Description  string
 	PaymentLink  string
+	Business     BusinessInfo
 }
 
 type InvoiceEmailItem struct {
@@ -28,6 +37,62 @@ type InvoiceEmailItem struct {
 }
 
 func InvoiceTemplate(d InvoiceEmailData) string {
+	senderName := d.Business.BusinessName
+	if senderName == "" {
+		senderName = "PayFlow"
+	}
+
+	// Header: logo image if available, else "P" badge fallback
+	headerLogoHTML := `<span style="background:#6366f1;border-radius:8px;padding:8px 14px;color:#fff;font-size:18px;font-weight:700;letter-spacing:-0.5px;">P</span>`
+	if d.Business.LogoURL != "" {
+		headerLogoHTML = fmt.Sprintf(`<img src="%s" alt="%s" style="height:40px;max-width:140px;object-fit:contain;display:block;vertical-align:middle;"/>`, d.Business.LogoURL, senderName)
+	}
+
+	// fromSection: label/value table rows for each contact field
+	emailRow := ""
+	if d.Business.BusinessEmail != "" {
+		emailRow = fmt.Sprintf(`
+			<tr>
+				<td style="padding:3px 12px 3px 0;color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;vertical-align:middle;">Email</td>
+				<td style="padding:3px 0;color:#6366f1;font-size:13px;">%s</td>
+			</tr>`, d.Business.BusinessEmail)
+	}
+
+	phoneRow := ""
+	if d.Business.BusinessPhone != "" {
+		phoneRow = fmt.Sprintf(`
+			<tr>
+				<td style="padding:3px 12px 3px 0;color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;vertical-align:middle;">Phone</td>
+				<td style="padding:3px 0;color:#374151;font-size:13px;">%s</td>
+			</tr>`, d.Business.BusinessPhone)
+	}
+
+	gstRow := ""
+	if d.Business.GSTNumber != "" {
+		gstRow = fmt.Sprintf(`
+			<tr>
+				<td style="padding:3px 12px 3px 0;color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;vertical-align:middle;">GST</td>
+				<td style="padding:3px 0;color:#374151;font-size:12px;font-family:'Courier New',monospace;letter-spacing:0.5px;">%s</td>
+			</tr>`, d.Business.GSTNumber)
+	}
+
+	fromSection := fmt.Sprintf(`
+		<tr>
+			<td style="padding-bottom:24px;">
+				<p style="margin:0 0 6px;color:#9ca3af;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">From</p>
+				<p style="margin:0 0 10px;color:#111827;font-size:15px;font-weight:700;line-height:1.2;">%s</p>
+				<table cellpadding="0" cellspacing="0">
+					%s
+					%s
+					%s
+				</table>
+			</td>
+		</tr>`,
+		senderName,
+		emailRow,
+		phoneRow,
+		gstRow,
+	)
 	var itemRows strings.Builder
 	for _, item := range d.Items {
 		itemRows.WriteString(fmt.Sprintf(`
@@ -45,8 +110,8 @@ func InvoiceTemplate(d InvoiceEmailData) string {
 	if d.TaxAmount > 0 {
 		taxRow = fmt.Sprintf(`
 			<tr>
-				<td colspan="2" style="padding:8px 16px;text-align:right;color:#6b7280;font-size:14px;">Tax (%.0f%%)</td>
-				<td colspan="2" style="padding:8px 16px;text-align:right;color:#6b7280;font-size:14px;">₹%.2f</td>
+				<td style="padding:8px 0 4px;text-align:right;color:#6b7280;font-size:14px;">Tax (%.0f%%)</td>
+				<td style="padding:8px 0 4px;text-align:right;color:#6b7280;font-size:14px;width:120px;">₹%.2f</td>
 			</tr>`, d.TaxRate, d.TaxAmount)
 	}
 
@@ -79,10 +144,14 @@ func InvoiceTemplate(d InvoiceEmailData) string {
       <table width="100%%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
-            <div style="display:inline-flex;align-items:center;gap:10px;">
-              <span style="background:#6366f1;border-radius:8px;padding:8px 14px;color:#fff;font-size:18px;font-weight:700;letter-spacing:-0.5px;">P</span>
-              <span style="color:#fff;font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-left:8px;">PayFlow</span>
-            </div>
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="vertical-align:middle;">%s</td>
+                <td style="vertical-align:middle;padding-left:12px;">
+                  <span style="color:#fff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">%s</span>
+                </td>
+              </tr>
+            </table>
           </td>
           <td align="right">
             <span style="background:rgba(99,102,241,0.2);color:#a5b4fc;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase;">Invoice</span>
@@ -102,6 +171,7 @@ func InvoiceTemplate(d InvoiceEmailData) string {
   <tr>
     <td style="background:#fff;padding:24px 40px 0;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
       <table width="100%%" cellpadding="0" cellspacing="0">
+        %s
         <tr>
           <td style="padding-bottom:20px;">
             <table cellpadding="0" cellspacing="0">
@@ -200,7 +270,10 @@ func InvoiceTemplate(d InvoiceEmailData) string {
 </body>
 </html>`,
 		d.InvoiceNo,
+		headerLogoHTML,
+		senderName,
 		d.CustomerName,
+		fromSection,
 		d.InvoiceNo,
 		d.InvoiceDate.Format("02 Jan 2006"),
 		d.DueDate.Format("02 Jan 2006"),

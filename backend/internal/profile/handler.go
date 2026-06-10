@@ -54,5 +54,16 @@ func (h *ProfileHandler) BusinessProfileRegister(c *gin.Context) {
 			"message": "business profile created successfully",
 		},
 	)
+}
 
+func (h *ProfileHandler) GetBusinessProfile(c *gin.Context) {
+	businessID := c.MustGet("business_id").(string)
+
+	profile, err := h.service.GetBusinessProfile(c.Request.Context(), businessID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "profile not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, profile)
 }

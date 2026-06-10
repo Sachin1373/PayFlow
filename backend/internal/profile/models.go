@@ -8,6 +8,14 @@ type BusinessProfileRequest struct {
 	Logo           string `json:"logo"`
 }
 
+type BusinessProfileResponse struct {
+	BusinessName  string `json:"business_name"`
+	BusinessEmail string `json:"business_email"`
+	BusinessPhone string `json:"business_phone"`
+	GSTNumber     string `json:"gst_number"`
+	LogoURL       string `json:"logo_url"`
+}
+
 type ApiConfigurationRequest struct {
 	AppId         string `json:"app_id"`
 	SecretKey     string `json:"secret_key"`

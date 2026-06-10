@@ -44,6 +44,7 @@ func RegisterRoutes(router *gin.Engine, app *app.App) {
 	profile.Use(middleware.Authorization(app.Config.JWTSecret))
 
 	{
+		profile.GET("", profileHandler.GetBusinessProfile)
 		profile.POST("/register", profileHandler.BusinessProfileRegister)
 	}
 

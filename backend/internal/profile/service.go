@@ -34,3 +34,7 @@ func (s *ProfileService) RegisterBussiness(ctx context.Context, req *BusinessPro
 
 	return s.repo.ProfileSetup(ctx, businessID, req)
 }
+
+func (s *ProfileService) GetBusinessProfile(ctx context.Context, businessID string) (*BusinessProfileResponse, error) {
+	return s.repo.GetBusinessProfile(ctx, businessID)
+}

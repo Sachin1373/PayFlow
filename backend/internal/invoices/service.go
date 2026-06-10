@@ -10,6 +10,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/cashfree"
 	"github.com/Sachin1373/payflow/backend/internal/email"
 	"github.com/Sachin1373/payflow/backend/internal/orders"
+	"github.com/Sachin1373/payflow/backend/internal/profile"
 )
 
 type InvoiceService struct {
@@ -17,14 +18,16 @@ type InvoiceService struct {
 	orderRepo       *orders.OrderRepository
 	cashfreeService *cashfree.CashfreeService
 	emailService    *email.Service
+	profileRepo     *profile.ProfileRepository
 }
 
-func NewInvoiceService(repo *InvoiceRepository, orderRepo *orders.OrderRepository, cashfreeService *cashfree.CashfreeService, emailService *email.Service) *InvoiceService {
+func NewInvoiceService(repo *InvoiceRepository, orderRepo *orders.OrderRepository, cashfreeService *cashfree.CashfreeService, emailService *email.Service, profileRepo *profile.ProfileRepository) *InvoiceService {
 	return &InvoiceService{
 		repo:            repo,
 		orderRepo:       orderRepo,
 		cashfreeService: cashfreeService,
 		emailService:    emailService,
+		profileRepo:     profileRepo,
 	}
 }
 
@@ -195,6 +198,16 @@ func (s *InvoiceService) SendInvoice(
 		TotalAmount:  invoice.TotalAmount,
 		Description:  invoice.Description,
 		PaymentLink:  paymentLink.LinkURL,
+	}
+
+	if bp, err := s.profileRepo.GetBusinessProfile(ctx, businessID); err == nil {
+		emailData.Business = email.BusinessInfo{
+			BusinessName:  bp.BusinessName,
+			BusinessEmail: bp.BusinessEmail,
+			BusinessPhone: bp.BusinessPhone,
+			GSTNumber:     bp.GSTNumber,
+			LogoURL:       bp.LogoURL,
+		}
 	}
 	for _, item := range invoice.Items {
 		emailData.Items = append(emailData.Items, email.InvoiceEmailItem{

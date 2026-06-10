@@ -50,3 +50,30 @@ func (r *ProfileRepository) ProfileSetup(ctx context.Context, businessId string,
 
 	return err
 }
+
+func (r *ProfileRepository) GetBusinessProfile(ctx context.Context, businessID string) (*BusinessProfileResponse, error) {
+	var p BusinessProfileResponse
+
+	err := r.db.QueryRow(ctx, `
+		SELECT
+			business_name,
+			COALESCE(business_email, ''),
+			COALESCE(business_phone, ''),
+			COALESCE(gst_number, ''),
+			COALESCE(logo_url, '')
+		FROM business_profile
+		WHERE business_id = $1
+	`, businessID).Scan(
+		&p.BusinessName,
+		&p.BusinessEmail,
+		&p.BusinessPhone,
+		&p.GSTNumber,
+		&p.LogoURL,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}

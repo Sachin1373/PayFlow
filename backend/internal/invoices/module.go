@@ -5,6 +5,7 @@ import (
 	"github.com/Sachin1373/payflow/backend/internal/cashfree"
 	"github.com/Sachin1373/payflow/backend/internal/email"
 	"github.com/Sachin1373/payflow/backend/internal/orders"
+	"github.com/Sachin1373/payflow/backend/internal/profile"
 )
 
 func NewModule(
@@ -27,11 +28,14 @@ func NewModule(
 
 	cashfreeService := cashfree.CashfreeNewService(cashfreeClient)
 
+	profileRepo := profile.NewBusinessRepository(app.DB)
+
 	service := NewInvoiceService(
 		repo,
 		orderRepo,
 		cashfreeService,
 		emailService,
+		profileRepo,
 	)
 
 	handler := NewInvoiceHandler(
