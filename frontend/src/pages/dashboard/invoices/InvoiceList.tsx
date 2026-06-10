@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -169,6 +169,17 @@ const applyFilters = () => {
   });
 };
 
+const clearFilters = () => {
+  setSearch("");
+  setStatusFilter("");
+  setFromDate(undefined);
+  setToDate(undefined);
+  setFilters({ search: "", status: "", fromDate: "", toDate: "" });
+  setPage(1);
+};
+
+const hasActiveFilters = !!(filters.search || filters.status || filters.fromDate || filters.toDate);
+
   return (
     <>
     <div className="flex flex-col gap-5 flex-1 p-6 md:p-8 max-w-[1400px] w-full mx-auto">
@@ -213,6 +224,12 @@ const applyFilters = () => {
         <Button variant="outline" size="lg" onClick={applyFilters} className="h-9 px-4">
           Apply Filters
         </Button>
+        {hasActiveFilters && (
+          <Button variant="ghost" size="lg" onClick={clearFilters} className="h-9 px-3 text-muted-foreground hover:text-foreground gap-1.5">
+            <X className="w-3.5 h-3.5" />
+            Clear
+          </Button>
+        )}
       </div>
 
       <DataTable<Invoice>

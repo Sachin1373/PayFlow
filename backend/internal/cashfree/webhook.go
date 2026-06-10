@@ -18,9 +18,6 @@ func verifyHMAC(secretKey, timestamp, rawBody, receivedSig string) bool {
 	mac := hmac.New(sha256.New, []byte(secretKey))
 	mac.Write([]byte(message))
 	expected := base64.StdEncoding.EncodeToString(mac.Sum(nil))
-	log.Printf("expected: %s", expected)
-	log.Printf("received: %s", receivedSig)
-	log.Printf("message: %q", message)
 	return hmac.Equal([]byte(expected), []byte(receivedSig))
 }
 

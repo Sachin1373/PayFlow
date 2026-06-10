@@ -1,9 +1,10 @@
 import AppRoutes from "./routes/AppRoutes";
 import { Toaster } from "sonner";
+import { UserProvider } from "./context/UserContext";
 
 function App() {
   return (
-    <>
+    <UserProvider>
       <AppRoutes />
       <Toaster
         richColors
@@ -16,8 +17,8 @@ function App() {
             color: "#fff",
           },
         }}
-      />;
-    </>
+      />
+    </UserProvider>
   )
 }
 

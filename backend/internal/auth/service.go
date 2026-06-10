@@ -51,7 +51,7 @@ func (s *AuthService) Login(ctx context.Context, req *LoginRequest) (string, str
 	business, err := s.repo.FindUserByEmail(ctx, req.Email)
 
 	if err != nil {
-		return "", "", err
+		return "", "", errors.New("User not Exist")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(business.Password), []byte(req.Password)); err != nil {

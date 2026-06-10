@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LayoutDashboard, FileText, ShoppingCart, Users, Settings, LogOut } from "lucide-react";
-import { jwtDecode } from 'jwt-decode';
 import { logoutUser } from "@/services/auth.service";
+import { useUser } from "@/context/UserContext";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -11,13 +10,6 @@ const links = [
   { to: "/customers", label: "Customers", icon: Users },
   { to: "/settings", label: "Profile", icon: Settings },
 ];
-
-interface User {
-  first_name: string;
-  last_name: string;
-  email: string;
-  exp: number;
-}
 
 const ZapIcon = () => (
   <div className="w-7 h-7 rounded-md bg-primary/15 flex items-center justify-center">
@@ -37,39 +29,21 @@ const ZapIcon = () => (
 );
 
 const Sidebar = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, clearUser } = useUser();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-
-    if (token) {
-      try {
-        const decodedPayload = jwtDecode<User>(token);
-        setUser(decodedPayload);
-
-        const currentTime = Date.now() / 1000;
-        if (decodedPayload.exp < currentTime) {
-          console.warn('Token has expired!');
-        }
-      } catch (error) {
-        console.error('Invalid token format:', error);
-      }
-    }
-  }, []);
 
   const handleLogout = async () => {
     try {
       await logoutUser();
     } catch {
-      // proceed with local logout even if the request fails
     }
+    clearUser();
     localStorage.removeItem("accessToken");
     navigate("/login");
   };
 
   const initials =
-    user?.first_name?.[0] + user?.last_name?.[0] || "U";
+    (user?.first_name?.[0] ?? "") + (user?.last_name?.[0] ?? "") || "U";
 
 
   return (
