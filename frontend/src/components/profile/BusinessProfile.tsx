@@ -39,7 +39,6 @@ const BusinessProfile: React.FC = () => {
 
       if (logoFile) {
         const fileName = `${Date.now()}-${logoFile.name}`;
-        console.log("fileName :", fileName);
         const { error } = await supabase.storage
           .from("PayFlow")
           .upload(fileName, logoFile);
@@ -54,7 +53,6 @@ const BusinessProfile: React.FC = () => {
 
         logoUrl = data.publicUrl;
       }
-      console.log("logoUrl :", logoUrl);
       await registerProfile({
         payload: {
           bussiness_name: data.business_name,

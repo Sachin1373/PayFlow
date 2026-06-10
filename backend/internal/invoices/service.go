@@ -158,13 +158,6 @@ func (s *InvoiceService) SendInvoice(
 		linkReq,
 	)
 
-	log.Println("paymentLink :", paymentLink)
-
-	log.Printf(
-		"Payment Link Created: %s",
-		paymentLink.LinkURL,
-	)
-
 	if err != nil {
 		return err
 	}
