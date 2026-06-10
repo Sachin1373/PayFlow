@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { getProfile, registerProfile } from "../../services/profile.service";
+import { registerProfile } from "../../services/profile.service";
 import { supabase } from "@/lib/supabase";
 
 type Data = {

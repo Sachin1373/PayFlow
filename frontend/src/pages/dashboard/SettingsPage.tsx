@@ -1,5 +1,5 @@
 import BusinessProfile from "@/components/profile/BusinessProfile";
-import ApiConfiguration from "@/components/profile/ApiConfiguration";
+// import ApiConfiguration from "@/components/profile/ApiConfiguration";
 import Notifications from "@/components/profile/Notifications";
 
 const SettingsPage = () => {

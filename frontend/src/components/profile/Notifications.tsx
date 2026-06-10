@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { getProfile, registerProfile } from "../../services/profile.service";
+import { registerProfile } from "../../services/profile.service";
 
 type NotificationsState = {
   payment_received: boolean;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getProfile, registerProfile } from "../../services/profile.service";
+import { registerProfile } from "../../services/profile.service";
 import { Eye, EyeOff } from "lucide-react";
 
 const ApiConfiguration: React.FC = () => {
