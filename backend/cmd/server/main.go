@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -38,9 +39,7 @@ func main() {
 	router := routes.NewRouter()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:5173",
-		},
+		AllowOrigins: strings.Split(cfg.AllowedOrigins, ","),
 		AllowMethods: []string{
 			"GET",
 			"POST",

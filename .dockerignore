@@ -1,0 +1,12 @@
+.git
+.env
+.env.*
+*.md
+docs/
+scripts/
+deployments/
+payflow_backup.sql
+cashfree_orchestration_guide.md
+frontend/node_modules
+frontend/dist
+backend/bin

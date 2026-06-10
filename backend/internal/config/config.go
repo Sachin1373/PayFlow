@@ -16,20 +16,18 @@ type Config struct {
 	CashfreeClientID     string
 	CashfreeClientSecret string
 	CashfreeEnv          string
-	// RedisHost     string
-	// RedisPort     string
-	// RedisPassword string
+	AllowedOrigins       string
 }
 
 func Load() *Config {
 	err := godotenv.Load("../.env")
 
 	if err != nil {
-		log.Println(".env file not found")
+		log.Println(".env file not found, reading from environment")
 	}
 
 	return &Config{
-		AppPort:              getEnv("APP_PORT", "8080"),
+		AppPort:              firstNonEmpty(os.Getenv("PORT"), getEnv("APP_PORT", "8080")),
 		DBURL:                getEnv("DB_URL", ""),
 		JWTSecret:            getEnv("JWT_SECRET", ""),
 		MailApiKey:           getEnv("MAIL_API_KEY", ""),
@@ -37,10 +35,17 @@ func Load() *Config {
 		CashfreeClientID:     getEnv("CASHFREE_CLIENT_ID", ""),
 		CashfreeClientSecret: getEnv("CASHFREE_CLIENT_SECRET", ""),
 		CashfreeEnv:          getEnv("CASHFREE_ENV", ""),
-		// RedisHost:     getEnv("REDIS_HOST", "localhost"),
-		// RedisPort:     getEnv("REDIS_PORT", "6379"),
-		// RedisPassword: getEnv("REDIS_PASSWORD", ""),
+		AllowedOrigins:       getEnv("ALLOWED_ORIGINS", "http://localhost:5173"),
 	}
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 func getEnv(key string, fallback string) string {
