@@ -106,8 +106,6 @@ const BusinessProfile: React.FC = () => {
     );
   }
 
-  console.log("lgog :", saved.logo_url)
-
   return (
     <section className="bg-card rounded-lg p-6 space-y-6">
       <div className="flex items-start justify-between">
