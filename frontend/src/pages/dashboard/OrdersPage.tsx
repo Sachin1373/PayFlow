@@ -127,7 +127,10 @@ const OrdersPage = () => {
   }, [fetchOrders, filters, page]);
 
   useEffect(() => {
-    setFilters((prev) => ({ ...prev, search: debouncedSearch }));
+    setFilters((prev) => {
+      if (prev.search === debouncedSearch) return prev;
+      return { ...prev, search: debouncedSearch };
+    });
     setPage(1);
   }, [debouncedSearch]);
 

@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { searchCustomers, type CustomerSearchResult } from "@/services/customer.service";
 import type { CustomerForm } from "./types";
 
@@ -29,7 +30,6 @@ export function CustomerStep({
         const res = await searchCustomers(query);
         setResults(res);
       } catch {
-        // silent — don't interrupt the form flow
       }
     }, 300);
     return () => clearTimeout(t);
@@ -61,7 +61,6 @@ export function CustomerStep({
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Existing customer search */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-foreground">
           Select existing customer
@@ -115,7 +114,6 @@ export function CustomerStep({
         <div className="flex-1 h-px bg-border" />
       </div>
 
-      {/* Manual entry fields */}
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-foreground">Customer Name</label>
         <Input value={form.name} onChange={set("name")} placeholder="Full name" className="h-9" />
@@ -145,7 +143,11 @@ export function CustomerStep({
 
       <div className="flex flex-col gap-1.5">
         <label className="text-sm font-medium text-foreground">Due Date</label>
-        <Input type="date" value={form.due_date} onChange={set("due_date")} className="h-9" />
+        <DatePicker
+          value={form.due_date ? new Date(form.due_date) : undefined}
+          onChange={(date) => onChange({ ...form, due_date: date ? date.toISOString().slice(0, 10) : "" })}
+          placeholder="Pick a due date"
+        />
       </div>
 
       <div className="flex flex-col gap-1.5">

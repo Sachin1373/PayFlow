@@ -34,7 +34,7 @@ const InvoicesPage = () => {
     resetWizard();
   };
 
-  const handleSave = async (asDraft: boolean) => {
+  const handleSave = async () => {
     setSaving(true);
     try {
       const subtotal = items.reduce((s, it) => s + it.amount, 0);
@@ -63,7 +63,7 @@ const InvoicesPage = () => {
         })),
       });
 
-      toast.success(asDraft ? "Invoice saved as draft" : "Invoice created & payment link generated");
+      toast.success("Invoice created Successfully");
       backToList();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to create invoice";
