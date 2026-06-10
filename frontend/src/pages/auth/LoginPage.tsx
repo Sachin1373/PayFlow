@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { loginUser } from "@/services/auth.service";
+import { useUser } from "@/context/UserContext";
 
 type LoginFormData = {
   email: string;
@@ -14,6 +15,7 @@ type LoginFormData = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { refreshUser } = useUser();
   const [serverError, setServerError] = useState("");
 
   const {
@@ -29,9 +31,8 @@ export default function LoginPage() {
       const response = await loginUser(data);
 
       localStorage.setItem("accessToken", response.accessToken);
-
+      await refreshUser();
       showSuccess("Welcome back 👋 Login successful!");
-
       navigate("/dashboard");
     } catch (error: any) {
       const message =

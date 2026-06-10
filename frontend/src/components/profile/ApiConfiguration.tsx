@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 const ApiConfiguration: React.FC = () => {
   const [appId, setAppId] = useState("");
   const [secret, setSecret] = useState("");
-  const [webhook, setWebhook] = useState("");
+  const [webhook] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [env, setEnv] = useState<"sandbox" | "production">("sandbox");
