@@ -16,6 +16,28 @@ import (
 func NewRouter() *gin.Engine {
 	router := gin.Default()
 
+	router.GET("/health", func(c *gin.Context) {
+
+		// sqlDB, err := app.App.
+		// if err != nil {
+		// 	c.JSON(503, gin.H{
+		// 		"status": "unhealthy",
+		// 	})
+		// 	return
+		// }
+
+		// if err := sqlDB.Ping(); err != nil {
+		// 	c.JSON(503, gin.H{
+		// 		"status": "unhealthy",
+		// 	})
+		// 	return
+		// }
+
+		c.JSON(200, gin.H{
+			"status": "healthy",
+		})
+	})
+
 	return router
 }
 
